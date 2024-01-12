@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.22;
+pragma solidity ^0.8.14;
 
 contract SimpleStorage {
     // not specifying a value for the uint variable, defaults to 0

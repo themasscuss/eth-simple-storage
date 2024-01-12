@@ -1,11 +1,11 @@
-const { ethers, JsonRpcProvider } = require("ethers");
-const fs = require("fs-extra");
+import { ethers, JsonRpcProvider } from "ethers";
+import fs from "fs-extra";
 
 async function main() {
   // http://127.0.0.1:7545  - ganache endpoint
-  const provider = new JsonRpcProvider("http://127.0.0.1:7545");
+  const provider = new ethers.JsonRpcProvider("http://127.0.0.1:7545");
   const wallet = new ethers.Wallet(
-    "0xc7b963fd9f4a8185cfe75d233e3bee25617c94f19af057dddb81a355a68b503a",
+    "0x97f9e69156fe167b8aa5eef74f151bb605c4a773079398cef6887152f7c5d086",
     provider
   );
   const abi = fs.readFileSync("./SimpleStorage_sol_SimpleStorage.abi", "utf8");
