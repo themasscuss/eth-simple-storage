@@ -1,6 +1,6 @@
-import { ethers } from "ethers";
-import fs from "fs-extra";
-import "dotenv/config";
+import { ethers } from "ethers"; //  to interact with Ethereum Blockchain
+import fs from "fs-extra"; //  to read local file
+import "dotenv/config"; // to store environment variables
 
 async function main() {
   const provider = new ethers.JsonRpcProvider(process.env.RPC_URL); // ganache endpoint url
@@ -11,12 +11,14 @@ async function main() {
     "utf8"
   );
 
+  // create/deploy a new Contract
   const contractFactory = new ethers.ContractFactory(abi, binary, wallet);
-
   console.log("Deploying, please wait...");
   const contract = await contractFactory.deploy(); // can pass arguments with 'deploy' such as gas price, gas limit etc
   await contract.deploymentTransaction().wait(1);
-  // console.log(contract);
+
+  // get target contract address
+  console.log(`Contract Address: ${contract.target}`);
 
   // get Number
   const currentFavouriteNumber = await contract.retrieveNumber();
@@ -24,17 +26,13 @@ async function main() {
 
   // store Number
   const storeTransaction = await contract.storeNumber("333");
-  const transactionResponse = storeTransaction.wait(1);
+  await storeTransaction.wait(1);
+
+  // retrieve updated number
   const updatedFavouriteNumber = await contract.retrieveNumber();
   console.log(`updated Fav Num: ${updatedFavouriteNumber}`);
 
-  // console.log("this is the deployment transaction response... ");
-  // console.log(contract.deploymentTransaction());
-
-  // const transactionReceipt = await contract.deploymentTransaction().wait(1);
-  // console.log("this is Transactinon Receipt");
-  // console.log(transactionReceipt);
-
+  // DEPLOY WITH TRANSACTION DATA
   // console.log("deploy with transacion data");
   // const nonce = await wallet.getNonce();
   // const tx = {
