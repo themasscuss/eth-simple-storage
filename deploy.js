@@ -1,12 +1,10 @@
 import { ethers } from "ethers";
 import fs from "fs-extra";
+import "dotenv/config";
 
 async function main() {
-  const provider = new ethers.JsonRpcProvider("http://127.0.0.1:7545"); // ganache endpoint url
-  const wallet = new ethers.Wallet(
-    "0x9b9de2fe632571d33f84f899af921ac1ec50cf54425fb3102cad388fea4ebc02",
-    provider
-  );
+  const provider = new ethers.JsonRpcProvider(process.env.RPC_URL); // ganache endpoint url
+  const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
   const abi = fs.readFileSync("./SimpleStorage_sol_SimpleStorage.abi", "utf8");
   const binary = fs.readFileSync(
     "./SimpleStorage_sol_SimpleStorage.bin",
@@ -17,14 +15,25 @@ async function main() {
 
   console.log("Deploying, please wait...");
   const contract = await contractFactory.deploy(); // can pass arguments with 'deploy' such as gas price, gas limit etc
+  await contract.deploymentTransaction().wait(1);
   // console.log(contract);
 
-  console.log("this is the deployment transaction response... ");
-  console.log(contract.deploymentTransaction());
+  // get Number
+  const currentFavouriteNumber = await contract.retrieveNumber();
+  console.log(`current Fav Num: ${currentFavouriteNumber.toString()}`);
 
-  const transactionReceipt = await contract.deploymentTransaction().wait(1);
-  console.log("this is Transactinon Receipt");
-  console.log(transactionReceipt);
+  // store Number
+  const storeTransaction = await contract.storeNumber("333");
+  const transactionResponse = storeTransaction.wait(1);
+  const updatedFavouriteNumber = await contract.retrieveNumber();
+  console.log(`updated Fav Num: ${updatedFavouriteNumber}`);
+
+  // console.log("this is the deployment transaction response... ");
+  // console.log(contract.deploymentTransaction());
+
+  // const transactionReceipt = await contract.deploymentTransaction().wait(1);
+  // console.log("this is Transactinon Receipt");
+  // console.log(transactionReceipt);
 
   // console.log("deploy with transacion data");
   // const nonce = await wallet.getNonce();
